@@ -52,7 +52,11 @@ class Gem::Commands::InaboxCommand < Gem::Command
 
       Net::HTTP.start(url.host, url.port) {|con|
         con.read_timeout = 5
-        response = con.post("/upload", query, headers)
+        req = Net::HTTP::Post.new('/upload')
+        req.initialize_http_header(headers)
+        req.basic_auth url.user, url.password
+        req.body = query
+        response = con.request(req)
         puts response.body
       }
     end
